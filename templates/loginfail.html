@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+
+<!-- =============================================================== -->
+<!-- loginfail.html                                                      -->
+<!-- Author: Caroline di Vittorio                                    -->
+<!-- =============================================================== -->
+<html>
+  <head>
+    <title>TigerStudy</title>
+      <style>
+          body, html {
+            height: 100%;
+            width:100%;
+            margin: 0;
+          }
+          .bg {
+            /* Center and scale nicely */
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+
+            background-color: #f58025;
+          }
+      </style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  </head>
+  <body>
+      <div class="row h-100 w-100 d-flex justify-content-center mx-auto my-auto" style="background-color: #f58025">
+          <div class="col-bg-12 my-auto w-25">
+              <div class="card">
+                  <div class="card-header">
+                    Sorry...
+                  </div>
+                  <div class="card-body">
+                    We're terribly sorry, but this site is for undergraduates only. Want to learn more? Reach out to
+              the McGraw Center for Teaching and Learning (<a target="_blank" href="mailto:mcgugrad@princeton.edu">mcgugrad@princeton.edu</a>) or to the TigerStudy
+              administrators (<a target="_blank" href="mailto:tiger-study@princeton.edu">tiger-study@princeton.edu</a>).
+                  </div>
+              </div>
+          </div>
+      </div>
+      {% include 'footer.html' %}
+  </body>
+</html>
+

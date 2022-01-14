@@ -1,0 +1,75 @@
+
+<!-- Disclaimer modal -->
+{% if isFirstLogin %}
+  <div class="modal fade" data-backdrop="static" data-keyboard="false" id="disclaimerModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Welcome to TigerStudy!</h5>
+        </div>
+        <div class="modal-body">
+          We're glad you're here.
+          <br><br>
+          By using this service, you are <strong>agreeing to respect all of Princeton's collaboration policies</strong>,
+            including general Honor Code rules and also course-specific guidelines.
+          <br><br>
+          You also agree to have your netid shared with the students that you are matched with.
+           <br><br>
+          Start by searching for a class using the search pane on the left.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">I Accept</button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+<!-- nav bar -->
+  <nav class="navbar navbar-custom navbar-expand-lg navbar-light bg-light" >
+    <div class="container-fluid">
+
+      <!-- Navbar brand name -->
+      <a class="navbar-brand" href="/">TigerStudy</a>
+
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Navbar links -->
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto">
+          {% if isAdmin %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" role="button" data-toggle="dropdown" href="#" id="admin-dropdown">Admin</a>
+              <div class="dropdown-menu" aria-labelledby="admin-dropdown">
+                  <a class="dropdown-item" href="admin">Admin</a>
+                  <a class="dropdown-item" href="admin_courses">Courses</a>
+                  <a class="dropdown-item" href="testing">Testing</a>
+              </div>
+          </li>
+          {% endif %}
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="groups">My Groups</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="about">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="logout">Logout</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <script src=
+  "https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js">
+  </script>
+  <script src=
+  "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js">
+  </script>
+  <script src="static/home.js"></script>

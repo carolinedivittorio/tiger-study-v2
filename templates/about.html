@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+
+<!-- =============================================================== -->
+<!-- about.html                                                      -->
+<!-- Author: Kasey McFadden                                          -->
+<!-- =============================================================== -->
+
+<html>
+  <head>
+    {% include 'header.html' %}
+  </head>
+  <body>
+    {% include 'nav.html' %}
+  </body>
+
+<div class="main-container">
+  <main class="about-text-container" style="display: flex; flex-direction: column; justify-content: center; align-items: center;text-align: center;">
+    <div class="container faq">
+      <div class="row">
+        <div class="col-4">
+          <div class="list-group" id="list-tab" role="tablist">
+            <a class="list-group-item list-group-item-action h5 active" id="list-faq-list" data-toggle="list" href="#list-faq" role="tab" aria-controls="faq">FAQs</a>
+            <a class="list-group-item list-group-item-action h5" id="list-policy-list" data-toggle="list" href="#list-policy" role="tab" aria-controls="policy">Policy</a>
+            <a class="list-group-item list-group-item-action h5" id="list-demo-list" data-toggle="list" href="#list-demo" role="tab" aria-controls="demo">Demo</a>
+            <a class="list-group-item list-group-item-action h5" id="list-feedback-list" data-toggle="list" href="#list-feedback" role="tab" aria-controls="feedback">Feedback</a>
+            <a class="list-group-item list-group-item-action h5" id="list-help-list" data-toggle="list" href="#list-help" role="tab" aria-controls="help">Help!</a>
+          </div>
+        </div>
+        <div class="col-8" style="text-align: start;">
+          <div class="tab-content" id="nav-tabContent">
+            <div class="tab-pane fade show active" id="list-faq" role="tabpanel" aria-labelledby="list-faq-list">
+              <h5>How do I find my classes?</h5>
+              <p>We pull course data from Princeton OIT's Web Feeds, so you'll be able to find all courses on the <a href="/">Home</a> page search panel.</p>
+
+              <h5>How do I join a group?</h5>
+              <p>When you sign up for a course, you'll be placed with a study group. An email will be automatically sent to your Princeton email address. If you don't receive an email shortly after joining a group, please reach out to <a href="mailto:tiger-study@princeton.edu">tiger-study@princeton.edu</a>.</p>
+
+              <h5>How do I view my groups?</h5>
+              <p>View your groups in the <a href="mygroups">My Groups</a> page. Here you can click on a group to view your group members, switch to a different group, or leave the group.</p>
+            </div>
+            <div class="tab-pane fade" id="list-policy" role="tabpanel" aria-labelledby="list-policy-list">
+              <p>By using this service, you are <strong>agreeing to respect all of Princeton's collaboration policies</strong>, including general Honor Code rules and also course-specific guidelines.</p>
+            </div>
+            <div class="tab-pane fade" id="list-demo" role="tabpanel" aria-labelledby="list-demo-list">
+              <center>
+                <iframe width="600vw" height="300vh" src="https://www.youtube.com/embed/-Q5xWiCFsYI" title="TigerStudy Demo" frameborder="0" allowfullscreen></iframe>
+              </center>
+            </div>
+            <div class="tab-pane fade" id="list-feedback" role="tabpanel" aria-labelledby="list-feedback-list">
+              <p>We would love to hear your feedback. Please email <a target="_blank" href="mailto:tiger-study@princeton.edu">tiger-study@princeton.edu</a> or the site creators at <a target="_blank" href="mailto:cmdv@princeton.edu">cmdv@princeton.edu</a> and <a target="_blank" href="mailto:kaseym@princeton.edu">kaseym@princeton.edu</a>.</p>
+            </div>
+            <div class="tab-pane fade" id="list-help" role="tabpanel" aria-labelledby="list-feedback-list">
+              <p>Uh-oh! Something must be very wrong. Please reach out to the site creators at <a target="_blank" href="mailto:cmdv@princeton.edu">cmdv@princeton.edu</a> and <a target="_blank" href="mailto:kaseym@princeton.edu">kaseym@princeton.edu</a>.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="about-text" style="text-align: center; align-items: center;">
+      Created for the 
+      <a class ="about-text-link" href="https://mcgraw.princeton.edu/" target="_blank">McGraw Center</a>
+      in Spring 2021.
+      <br>
+      COS Independent Work of cmdv@ and kaseym@.
+    </div>
+  </main>
+  
+  {% include 'footer.html' %}
+
+</div>
+
+</html>

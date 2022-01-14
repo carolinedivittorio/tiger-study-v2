@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+
+<!-- =============================================================== -->
+<!-- admin.html                                                      -->
+<!-- Author: Caroline di Vittorio                                    -->
+<!-- =============================================================== -->
+
+<html>
+  <head>
+    {% include 'header.html' %}
+  </head>
+  <body>
+    {% include 'nav.html' %}
+    <div class=container>
+      <div class="row">
+        <div class="col-4">
+          <div class=admin-boxes>
+            <h5>TigerStudy Usage Statistics</h5>
+            <hr>
+            Number of Visitors Since Start: {{breakdown[0]}}<br>
+            Number of Study Groups Created: {{breakdown[1]}}<br>
+            Number of Students Participating in Study Groups: {{breakdown[2]}} <br>
+          </div>
+          <br>
+          <div class="admin-boxes">
+            <h5>Semester Information</h5>
+            <hr>
+            The semester in progress is {{semester}}. It was launched by {{launcher}} on {{launch_date}}.
+            <hr>
+            <p style = 'border:3px; border-style:solid; border-color:#FF0000; border-radius: 1vw;padding: 1em;'>
+              Starting a new semester will delete all current information from the database. There is no way to undo this. 
+              Please use with tremendous caution. 
+            </p>
+            <form action="start_new_sem" style="margin:2px; padding:2px">
+              <select id="sem">
+                <option value="fall">
+                  <p>Fall</p>
+                </option><option value="spring">
+                  <p>Spring</p>
+                </option><option value="summer">
+                  <p>Summer</p>
+                </option>
+              </select>
+              <select id="year">
+                <option value="2021">
+                  <p>2021</p>
+                </option><option value="2022">
+                  <p>2022</p>
+                </option><option value="2023">
+                  <p>2023</p>
+                </option>
+              </select>
+              <input type="submit" class=btn value="Start">
+            </form> 
+          </div>
+        </div>
+        
+        <div class="col-4">
+          <div class="admin-boxes">
+            <strong>Add Admin:</strong><br>
+            <form action="edit_admin" method="get">
+                <label>Netid: </label>
+                <input type="text" name="netid">
+                <input type="hidden" name="action" value="add_admin">
+                <input type="submit" class="btn" value="Add">
+            </form>
+
+            {% if alert[0] != 'None' %}
+                {% if alert[0].getType() == 'danger' %}
+                  <div class="alert alert-danger" role="alert">
+                      {{alert[0].getMessage()}}
+                  </div>
+                {% else %}
+                  <div class="alert alert-success" role="alert">
+                      {{alert[0].getMessage()}}
+                  </div>
+                {% endif %}
+            {% endif %}
+          </div>
+          <br>
+          <div class="admin-boxes">
+            <strong>Remove Admin</strong><br>
+            <form action="edit_admin" method="get">
+                <label>Netid: </label>
+                <input type="text" name="netid">
+                <input type="hidden" name="action" value="remove_admin">
+                <input type="submit" class="btn" value="Remove">
+            </form>
+
+            {% if alert[1] != 'None' %}
+                {% if alert[1].getType() == 'danger' %}
+                    <div class="alert alert-danger" role="alert">
+                        {{alert[1].getMessage()}}
+                    </div>
+                {% else %}
+                    <div class="alert alert-success" role="alert">
+                        {{alert[1].getMessage()}}
+                    </div>
+                {% endif %}
+            {% endif %}
+          </div>
+          <br>
+          <div class="admin-boxes">
+            <strong>Add Faculty:</strong><br>
+            <form action="edit_admin" method="get">
+                <label>Netid: </label>
+                <input type="text" name="netid">
+                <input type="hidden" name="action" value="add_faculty">
+                <input type="submit" class="btn" value="Add">
+            </form>
+
+            {% if alert[2] != 'None' %}
+                {% if alert[2].getType() == 'danger' %}
+                  <div class="alert alert-danger" role="alert">
+                     {{alert[2].getMessage()}}
+                  </div>
+                {% else %}
+                  <div class="alert alert-success" role="alert">
+                      {{alert[2].getMessage()}}
+                  </div>
+                {% endif %}
+            {% endif %}
+          </div>
+          <br>
+          <div class="admin-boxes" >
+            <strong>Remove Faculty</strong><br>
+            <form action="edit_admin" method="get">
+                <label>Netid: </label>
+                <input type="text" name="netid">
+                <input type="hidden" name="action" value="remove_faculty">
+                <input type="submit" class="btn" value="Remove">
+            </form>
+
+            {% if alert[3] != 'None' %}
+               {% if alert[3].getType() == 'danger' %}
+                    <div class="alert alert-danger" role="alert">
+                       {{alert[3].getMessage()}}
+                    </div>
+               {% else %}
+                   <div class="alert alert-success" role="alert">
+                        {{alert[3].getMessage()}}
+                   </div>
+                {% endif %}
+           {% endif %}
+          </div>
+        </div>
+
+        <div class="col-4">
+          <div class="admin-boxes">
+            <h5>Current Admin</h5>
+            <hr>
+            {% for admin in curr_admin %}
+              {{admin}}<br>
+            {% endfor %}
+          </div>
+          <br>
+          <div class="admin-boxes">
+            <h5>Current Faculty Access</h5>
+            <hr>
+            {% for fac in curr_faculty %}
+              {{fac}}<br>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+    
+
+  {% include 'footer.html' %}
+  </body>
+
+  
+
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+
+<!-- =============================================================== -->
+<!-- admin_edit_course.html                                          -->
+<!-- Author: Caroline di Vittorio                                    -->
+<!-- =============================================================== -->
+
+<html>
+  <head>
+    {% include 'header.html' %}
+  </head>
+  <body>
+    {% include 'nav.html' %}
+
+    <div class="panel">
+      <div class="admin-breakdown-general">
+          <div class="row p-5 position:fixed">
+              <div class="col-12">
+                  <div class="row">
+                      <div class="col-12">
+                          <center><h2>{{ course.getDept() }}: {{ course.getNum() }}</h2>
+                          <h3>{{ course.getTitle() }}</h3></center>
+                          <hr><br>
+                      </div>
+                  </div>
+                  <div class="row">
+                      <div class="col-6">
+                        <form action="submit_course_edits" method="get" id="editform">
+                          <input type="hidden" name="dept" value={{ course.getDept() }}>
+                          <input type="hidden" name="classnum" value={{ course.getNum() }}>
+                          <div class="row">
+                            <div class="col-2"><strong>Approval Status</strong></div>
+                            <div class="col-10">
+                              {% if course.isEndorsed() == 0 %}
+                                <input type="radio" id="approved" name="status" value="Approve">
+                                <label>Approved</label><br>
+                                <input type="radio" id="pending" name="status" value="Pending">
+                                <label>Pending</label><br>
+                                <input type="radio" id="denied" checked="checked" name="status" value="Denied">
+                                <label>Denied</label><br><br>
+                              {% elif course.isEndorsed() == 1 %}
+                                <input type="radio" id="approved" name="status" value="Approve">
+                                <label>Approved</label><br>
+                                <input type="radio" id="pending" checked="checked" name="status" value="Pending">
+                                <label>Pending</label><br>
+                                <input type="radio" id="denied" name="status" value="Denied">
+                                <label>Denied</label><br><br>
+                              {% else %}
+                                <input type="radio" id="approved" checked="checked" name="status" value="Approve">
+                                <label>Approved</label><br>
+                                <input type="radio" id="pending"  name="status" value="Pending">
+                                <label>Pending</label><br>
+                                <input type="radio" id="denied"  name="status" value="Denied">
+                                <label>Denied</label><br><br>
+                              {% endif %}
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-2"><strong>Instructor Notes</strong></div>
+                            <div class="col-10">
+                              <textarea name="notes" form="editform" style="width:100%;">{{ course.getNotes() }}</textarea><br><br>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-12">
+                              <input class="btn" type="btn" onclick="window.history.back();" value="Cancel">
+                              <input type="submit" class="btn" value="Submit">
+                            </div>
+                          </div>
+                        </form>
+                      </div>
+                      <div class="col-6" style="overflow-y: scroll;">
+                        <div class="courses-groups">
+                          {% for group in groups %}
+                            <div class="container p-2 m-2" style="background-color: lightskyblue">
+                              <div class="row">
+                                <div class="col-4">
+                                  Group #{{ group[0].getGroupId() }}<br>
+                                  {{ group[0].getClassDept() }}{{ group[0].getClassNum() }}
+                                </div>
+                                <div class="col-8">
+                                  {% for student in group[1] %}
+                                    {{ student }}<br>
+                                  {% endfor %}
+                                </div>
+                              </div>
+                            </div>
+                          {% endfor %}
+                        </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+    </div>
+
+{% include 'footer.html' %}
+  </body>
+
+  </div>
+
+</html>

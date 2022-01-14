@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+
+<!-- =============================================================== -->
+<!-- mygroups.html                                                   -->
+<!-- Author: Kasey McFadden                                          -->
+<!-- =============================================================== -->
+
+<html>
+  <head>
+    <title>TigerStudy</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/style.css" type="text/css">
+    <link rel="shortcut icon" href="static/favicon.ico">
+  </head>
+
+  <div class="main-container">
+    <nav class="navbar navbar-custom navbar-expand-lg navbar-light bg-light">
+      <div class="container-fluid">
+  
+        <!-- Navbar brand name -->
+        <a class="navbar-brand" href="/">TigerStudy</a>
+        
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+  
+        <!-- Navbar links -->
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav ml-auto">
+            {% if isAdmin %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" role="button" data-toggle="dropdown" href="#" id="admin-dropdown">Admin</a>
+              <div class="dropdown-menu" aria-labelledby="admin-dropdown">
+                  <a class="dropdown-item" href="admin">Breakdown</a>
+                  <a class="dropdown-item" href="admin_classes">Courses</a>
+                  <a class="dropdown-item" href="admin_groups">Groups</a>
+              </div>
+          </li>
+          {% endif %}
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="mygroups">My Groups</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="about">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="me">{{netid}}</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="logout">Logout</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+  <div class="panel">
+    <div class="search-col">
+        <h2 class="col-title">
+          My Study Groups
+        </h2>
+        
+        <div class="mygroups-col">
+          <div id="groupsList">
+            {% for group in myGroups %}
+                <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" onclick="getMyGroupInfo(this)" groupId="{{ group.groupId }}" dept="{{ group.dept }}" coursenum="{{ group.coursenum }}">{{ group.title }}<span class="badge badge-primary badge-pill">{{ group.students|length - 1 }} partner{% if group.students|length - 1 != 1 %}s{% endif %}</span></li>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <div class="right-col">
+        <div class="group-col" id="groupResults">
+        </div>
+        <div class="group-col" id="leaveResults">
+        </div>
+      </div>
+    </div>
+    
+    <footer class="footer fixed-bottom">
+      <center>
+        This site is new! Experiencing difficulties? Contact us at <a target="_blank" href="mailto:tiger-study@princeton.edu">tiger-study@princeton.edu</a>.
+        TigerStudy is supported by the McGraw Center for Teaching and Learning.
+      </center>
+    </footer>
+    
+    <script src=
+    "https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js">
+    </script>
+    <script src=
+    "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js">
+    </script>
+    
+    <script src="../static/mygroups.js"></script>
+  </div>
+  
+</html>
