@@ -21,6 +21,8 @@ class Student:
         return self._last_name
 
     def getPhone(self):
+        if self._phone is None:
+            return ""
         return self._phone
 
     def getAvailability(self):

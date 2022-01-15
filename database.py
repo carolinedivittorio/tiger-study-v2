@@ -281,6 +281,28 @@ def getJoinedGroups(netid):
     conn.close()
     return groups
 
+# returns the classes that the relevant student has joined (both approved and unapproved)
+def getJoinedClasses(netid):
+    conn = db.connect()
+    stmt = group_info.select().where(group_assignment.c.netid == netid).where(
+        group_assignment.c.groupid == group_info.c.groupid).order_by(group_info.c.dept, group_info.c.classnum)
+    result = conn.execute(stmt)
+    courses = []
+    for row in result:
+        courses.append([row[1], row[2]])
+    conn.close()
+    return courses
+
+# returns the group that the relevant student has been assigned to in that class
+def getGroupOfStudentInClass(netid, dept, num):
+    conn = db.connect()
+    stmt = group_info.select().where(group_assignment.c.netid == netid)\
+        .where(group_assignment.c.groupid == group_info.c.groupid)\
+        .where(group_info.c.dept == dept)\
+        .where(group_info.c.classnum==num)
+    result = conn.execute(stmt)
+    return result.fetchone()[0]
+
 # creates a new group within the relevant class; returns the groupid
 def createNewGroup(dept, classnum):
     global group_info
@@ -394,7 +416,7 @@ def addStudentToClass(netid, dept, num):
     # check if there exists a group to add to
     groups = getGroupsInClass(dept, num)
     for group in groups:
-        if getNumStudentsInGroup(group) < GROUP_NO_STUDENTS_MAX:
+        if getNumStudentsInGroup(group.getGroupId()) < GROUP_NO_STUDENTS_MAX:
             addStudentToGroup(netid, group.getGroupId())
             return Alert(["success", group.getGroupId()])
 

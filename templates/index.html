@@ -47,7 +47,7 @@
         }
 
         function handleJoinClass(response){
-            $('join-class').html(response);
+            $('#join-class').html(response);
         }
 
         let request = null;
@@ -72,7 +72,8 @@
 
         }
 
-        function joinClass(input) {
+        function joinClass(input) 
+        {
             let dept = input.getAttribute("dept");
             let num = input.getAttribute("num");
 

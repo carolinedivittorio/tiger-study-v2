@@ -4,7 +4,7 @@
 # -----------------------------------------------------------------------
 
 from flask_mail import Mail, Message
-from flask import Flask, request, make_response, render_template
+from flask import Flask, request, make_response, render_template, redirect
 from sys import argv
 from CASClient import CASClient
 from emails import *
@@ -127,17 +127,48 @@ def load_user(user_id):
 # where the student is the only member, sends a special email. Otherwise, send an email to the student and all
 # others in the study group informing of the new student.
 def _addStudentToClass(netid, class_dept, class_num):
-    groupid = addStudentToClass(netid, class_dept, class_num)
+    alert_response = addStudentToClass(netid, class_dept, class_num)
+    if alert_response.getType()=="failure":
+        return -1
+     
+    groupid=alert_response.getMessage()
 
     endorsement_status = getClassEndorsement(class_dept, class_num)
 
     if endorsement_status == 0:
-        return
+        return groupid
 
     if endorsement_status == 1:
         if not TESTING:
             mail.send(waitingApprovalEmail(class_dept, class_num, netid))
-        return
+        return groupid
+
+    students_in_group = getStudentsInGroup(groupid)
+    if (len(students_in_group <= 1)):
+        if not TESTING:
+            mail.send(newGroupWelcomeEmail(netid, groupid))
+    else:
+        if not TESTING:
+            mail.send(newStudentWelcomeEmail(netid, students_in_group, groupid))
+
+    return groupid
+
+
+def _switchStudentInClass(netid, class_dept, class_num):
+    switch_alert = switchGroup(netid, class_dept, class_num)
+    if switch_alert.getType() == "failure":
+        return -1
+    
+    groupid=switch_alert.getMessage() 
+    endorsement_status = getClassEndorsement(class_dept, class_num)
+
+    if endorsement_status == 0:
+        return groupid
+    
+    if endorsement_status == 1:
+        if not TESTING:
+            mail.send(waitingApprovalEmail(class_dept, class_num, netid))
+        return groupid
 
     students_in_group = getStudentsInGroup(groupid)
     if (len(students_in_group <= 1)):
@@ -194,7 +225,7 @@ def searchResults():
 
     courses = search(dept, coursenum)
 
-    html = '<table class=\"table table-striped\"> ' \
+    html = '<table class=\"table table-striped justify-content-between\"> ' \
            '<thead> ' \
            '<tr> ' \
            '<th align = \"left\">Dept</th> ' \
@@ -206,21 +237,35 @@ def searchResults():
            '</thead>' \
            '<tbody> '
     for course in courses:
-        # numgroups = numberGroupsInClass(course.getDept(), course.getNum())
-
+        numgroups = numberGroupsInClass(course.getDept(), course.getNum())
+        if not LOCAL:
+            netid = current_user.id
+        else:
+            netid = 'cmdv'
+        alreadyJoined = getJoinedClasses(netid)
         html += '<tr>\n' + \
                 '<td> ' + course.getDept() + ' </td>\n' + \
                 '<td> ' + course.getNum() + ' </td>\n' + \
                 '<td> ' + course.getTitle() + ' </td>\n'
-        html += '<td> ' + '<span class="badge badge-primary badge-pill">group</span>' + ' </td>\n'
-        html += '<td> ' + '<button type="button" class="btn btn-danger" id="joinGroup" ' \
+
+        if numgroups > 0:
+            html += '<td> ' + '<span class="badge badge-primary badge-pill" style="float:right">' + str(numgroups) + ' group'
+            if numgroups > 1:
+                html+='s'
+            html+= '</span>' + ' </td>\n'
+        else:
+            html+= '<td>  </td>'
+        
+        if ([course.getDept(), course.getNum()] in alreadyJoined):
+            html+= '<td> <a href="mygroups" style="color:black">Group #' +  str(getGroupOfStudentInClass(netid, course.getDept(), course.getNum())) + '</a> </td>\n</tr>\n'
+        else :
+            html += '<td> ' + '<button type="button" class="btn btn-link" id="joinGroup" style="padding: 0px; color:black; float:center"' \
                 + 'dept="' + str(course.getDept()) + '" num="' + str(course.getNum()) \
-                + '" onclick="joinClass(this)"> <h6>Join</h6> </button>' + ' </td>\n </tr>\n'
+                + '" onclick="joinClass(this)"> <h6>Join</h6> </button>' + ' </td>\n</tr>\n'
 
     html += '</tbody></table>'
     response = make_response(html)
     return response
-
 
 @app.route('/joinClass', methods=['GET'])
 # @login_required
@@ -252,8 +297,7 @@ def joinStudentToClass():
     # html += 'View your group in the "My Groups" tab.</p>'
     # html += '</div>'
 
-    response = make_response()
-    return response
+    return redirect('home')
 
 # -----------------------------------------------------------------------
 # ADMIN BREAKDOWN AND GENERAL SITE ADMIN
@@ -283,7 +327,7 @@ def admin():
     return response
 
 @app.route('/start_new_semester')
-#login_required
+#@login_required
 def start_new_semester():
     netid = NETID
     if not LOCAL:
@@ -478,6 +522,221 @@ def about():
     response = make_response(html)
     return response
 
+# ------------------------------------------------------------------------------
+# MYGROUPS
+# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------
+@app.route('/mygroups')
+# @login_required
+def myGroups():
+    netid = NETID
+
+    if not LOCAL:
+        netid = cas.authenticate()
+        pageType = "undergraduates"
+        role = uservalidation(netid)
+        check = checkuser(role, pageType)
+        if not check:
+            return loginfail(netid)
+
+    myGroups = []
+
+    if not TESTING:
+        groups = getPublicJoinedGroups(netid)
+    else:
+        groups = getJoinedGroups(netid)
+
+    for groupId in groups:
+        group = {}
+        info = getGroupInformation(groupId)
+        students = getStudentsInGroup(groupId)
+        group['groupId'] = groupId
+        group['dept'] = info.getClassDept()
+        group['coursenum'] = info.getClassNum()
+        group['title'] = group['dept'] + ' ' + group['coursenum']
+        group['students'] = students
+        myGroups.append(group)
+
+    html = render_template('mygroups.html',
+                           netid=netid,
+                           isAdmin=isAdmin(netid),
+                           myGroups=myGroups,
+                           std_info=getStudentInformation(netid)
+                           )
+
+    response = make_response(html)
+    return response
+
+
+# -----------------------------------------------------------------------
+# Get My Group Info: display the info for a selected group that I joined
+@app.route('/getMyGroupInfo', methods=['GET'])
+# @login_required
+def getMyGroupInfo():
+    netid = NETID
+    if not LOCAL:
+        netid = cas.authenticate().strip()
+        pageType = "undergraduates"
+        role = uservalidation(netid)
+        check = checkuser(role, pageType)
+        if not check:
+            return loginfail(netid)
+
+    groupId = request.args.get('groupId')
+    group = getGroupInformation(groupId)
+    students = getStudentsInGroup(groupId)
+    dept = group.getClassDept()
+    coursenum = group.getClassNum()
+
+    html = '<div class="container">'
+    html += '<div class="row">\
+                <div class="col-6">\
+                    <h1>' + str(dept) + ' ' + str(coursenum) + '</h1>\
+                </div>\
+                <div class="col-6">\
+                    <button type="button" class="class-leave-btn btn btn-link" id="changeGroup" style="color:grey; align-text:right" ' \
+                    + 'groupId="' + groupId + '" dept="' + dept + '" coursenum="' + coursenum \
+                    + '" onclick="changeGroup(this)"><h6>' + 'Switch Groups' + '</h6></button><br>\
+                    <button type="button" class="class-leave-btn btn btn-link " id="leaveGroup" style="color:grey; align-text:right" ' \
+                    + 'groupId="' + groupId + '" dept="' + dept + '" coursenum="' + coursenum \
+                    + '" onclick="leaveGroup(this)"><h6>' + 'Leave Group' + '</h6></button>\
+                </div>\
+            </div>'
+    # html += '<h1>' + str(dept) + ' ' + str(coursenum) + '</h1>'
+
+    html += '<div class="row">'
+    if students == [netid]:
+        html += '<p>' + 'Nobody has joined yet. Hopefully you\'ll be matched soon!' + '</p>'
+    else:
+        html += '<table class="table">' + \
+                '<thead class="thead-light">' + \
+                '<tr><th scope="col" colspan="4">Partners</tr>' + \
+                '</thead>' + \
+                '<thead class="thead-dark">' + \
+                '<tr>' + \
+                '<th scope="col">First</th>' + \
+                '<th scope="col">Last</th>' + \
+                '<th scope="col">netid</th>' + \
+                '<th scope="col">Phone</th>' + \
+                '</tr>' + \
+                '</thead>' + \
+                '<tbody>'
+
+        for studentNetid in students:
+            if str(studentNetid) != str(netid):
+                student = getStudentInformation(studentNetid)
+                print('studentInfo', student)
+                html += '<tr>' + \
+                        '<td>' + str(student.getFirstName()) + '</td>' + \
+                        '<td>' + str(student.getLastName()) + '</td>' + \
+                        '<td>' + '<a href="mailto:' + str(studentNetid) + '@princeton.edu" target="_blank">' + str(
+                    studentNetid) + '</a>' + '</td>' + \
+                        '<td>' + str(student.getPhone()) + '</td>' + \
+                        '</tr>'
+
+        html += '</tbody>' + \
+                '</table></div></div>'
+
+    # html += '<br><br>'
+
+    # html += '<button type="button" class="class-leave-btn btn btn-warning btn-lg" id="changeGroup" ' \
+    #         + 'groupId="' + groupId + '" dept="' + dept + '" coursenum="' + coursenum \
+    #         + '" onclick="changeGroup(this)"><h4>' + 'Switch Groups' + '</h4></button>'
+
+    # html += '<br><br>'
+
+    # html += '<button type="button" class="class-leave-btn btn btn-danger btn-lg" id="leaveGroup" ' \
+    #         + 'groupId="' + groupId + '" dept="' + dept + '" coursenum="' + coursenum \
+    #         + '" onclick="leaveGroup(this)"><h4>' + 'Leave Group' + '</h4></button>'
+
+    response = make_response(html)
+    return response
+
+
+# -----------------------------------------------------------------------
+# Leave Group: leave a group
+@app.route('/leaveGroup', methods=['GET'])
+# @login_required
+def leaveGroup():
+    netid = NETID
+    if not LOCAL:
+        netid = cas.authenticate()
+        pageType = "undergraduates"
+        role = uservalidation(netid)
+        check = checkuser(role, pageType)
+        if not check:
+            return loginfail(netid)
+
+    groupId = request.args.get('groupId')
+    dept = request.args.get('dept')
+    coursenum = request.args.get('coursenum')
+
+    removeStudentFromGroup(netid, groupId, dept, coursenum)
+
+    html = ''
+    html += '<br>'
+    html += '<div class="alert alert-success" role="alert">'
+    html += 'You have left the group.'
+
+    response = make_response(html)
+    return response
+
+
+# -----------------------------------------------------------------------
+# Change Group: get a different group
+@app.route('/changeGroup', methods=['GET'])
+# @login_required
+def changeGroup():
+    netid = NETID
+    if not LOCAL:
+        netid = cas.authenticate()
+        pageType = "undergraduates"
+        role = uservalidation(netid)
+        check = checkuser(role, pageType)
+        if not check:
+            return loginfail(netid)
+
+    groupId = request.args.get('groupId')
+    dept = request.args.get('dept')
+    coursenum = request.args.get('coursenum')
+
+    _switchStudentInClass(netid, dept, coursenum)
+
+    html = ''
+    html += '<br>'
+    html += '<div class="alert alert-success" role="alert">'
+    html += 'You have been assigned a new group.'
+
+    response = make_response(html)
+    return response
+
+@app.route('/edit_contact', methods=['GET'])
+#@login_required
+def edit_contact():
+    netid = NETID
+    if not LOCAL:
+        netid = cas.authenticate()
+        pageType = "undergraduates"
+        role = uservalidation(netid)
+        check = checkuser(role, pageType)
+        if not check:
+            return loginfail(netid)
+    
+    fname = request.args.get('fname')
+    lname = request.args.get('lname')
+    phone = request.args.get('phone')
+
+    print('here')
+    print(netid)
+    print(fname)
+    print(lname)
+    print(phone)
+
+    updateStudent(Student([netid, fname, lname, phone, None, None]))
+
+    html = ''
+    response = make_response(html)
+    return response
 
 
 # ------------------------------------------------------------------------------
