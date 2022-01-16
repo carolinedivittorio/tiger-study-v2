@@ -13,6 +13,8 @@ from course import Course
 from group_assignment import GroupAssignment
 from study_groups import StudyGroup
 from scraper import scrape
+from datetime import date
+from cycle import Cycle
 
 GROUP_NO_STUDENTS_MIN = 3
 GROUP_NO_STUDENTS_MAX = 6
@@ -68,10 +70,26 @@ faculty_access = Table(
     Column('netid', String),
 )
 
+cycle = Table(
+    'cycle', meta,
+    Column('netid', String),
+    Column('start', Date),
+    Column('term', String),
+)
+
 
 # ---------------------------------------------------------------------
 # --------------------- DATABASE INTERFACE ----------------------------
 # ---------------------------------------------------------------------
+
+# ---------------------------------------------------------------------
+# --- CYCLE ----
+def getCycleInfo():
+    conn = db.connect()
+    stmt = cycle.select()
+    result = conn.execute(stmt)
+    conn.close()
+    return Cycle(result.fetchone())
 
 # ---------------------------------------------------------------------
 # --- ADMIN ----
@@ -85,6 +103,8 @@ def isAdmin(netid):
 
 # adds relevant netid to authorized admin access
 def addAdmin(netid):
+    if netid is None or netid == "":
+        return Alert(["danger", "Enter an admin netid."])
     if isAdmin(netid):
         return Alert(["danger", str(netid) + " is already an admin."])
     conn = db.connect()
@@ -129,6 +149,8 @@ def isFaculty(netid):
 
 # adds relevant netid to authorized faculty list
 def addFaculty(netid):
+    if netid is None or netid == "":
+        return Alert(["danger", "Enter a faculty netid."]) 
     if isFaculty(netid):
         return Alert(["danger", str(netid) + " is already an approved faculty."])
     conn = db.connect()
@@ -184,7 +206,7 @@ def getStudentInformation(netid):
 # updates the relevant student with the information in student_info
 def updateStudent(student_info):
     if student_info is None or student_info.getNetid == "":
-        return
+        return Alert(['failure', "Please Enter Contact Information"])
     conn = db.connect()
     stmt = student.delete().where(student.c.netid == student_info.getNetid())
     conn.execute(stmt)
@@ -193,6 +215,7 @@ def updateStudent(student_info):
                                    availability=student_info.getAvailability(), honor_code=student_info.getHonorCode())
     conn.execute(stmt)
     conn.close()
+    return Alert(['success', "Your contact information has been successfully saved."])
 
 # returns true if this is the first login of a student, and false otherwise
 def firstLogin(netid):
@@ -469,10 +492,11 @@ def switchGroup(netid, dept, num):
     for row in result:
         curr_groupid = row[0]
 
+    removeStudentFromGroup(netid, curr_groupid, dept, num)
     # check if there exists a group to add to
     groups = getGroupsInClass(dept, num)
     for group in groups:
-        if getNumStudentsInGroup(group) < GROUP_NO_STUDENTS_MAX and group.getGroupId() != curr_groupid:
+        if getNumStudentsInGroup(group.getGroupId()) < GROUP_NO_STUDENTS_MAX and group.getGroupId() != curr_groupid:
             addStudentToGroup(netid, group.getGroupId())
             return Alert(["success", group.getGroupId()])
 
@@ -550,7 +574,7 @@ def instantiateClass(dept, num, title):
 # Resets the database for new use. Deletes all information within it and reloads
 # all current class information.
 # USE WITH TREMENDOUS CAUTION
-def reset_classes(term):
+def reset_classes(netid, term):
     conn = db.connect()
     stmt = classes.delete()
     conn.execute(stmt)
@@ -560,8 +584,13 @@ def reset_classes(term):
     conn.execute(stmt)
     stmt = student.delete()
     conn.execute(stmt)
-    conn.close()
+    stmt = cycle.delete()
+    conn.execute(stmt)    
 
+    #start a new cycle
+    stmt = cycle.insert(netid=netid, date=date.today(), semester=term)
+    conn.close()
+    #set the classes
     DEPTS = ["AAS", "AFS", "AMS", "ANT", "AOS", "APC", "ARA", "ARC", "ART", "ASA", "AST", "ATL", "BCS", 
         "CBE", "CEE", "CGS", "CHI", "CHM", "CHV", "CLA", "CLG", "COM", "COS", "CWR", "CZE", "DAN", "EAS", 
         "ECO", "ECS", "EEB", "EGR", "ELE", "ENE", "ENG", "ENT", "ENV", "EPS", "FIN", "FRE", "FRS", "GEO", 
@@ -583,6 +612,16 @@ def reset_classes(term):
 
 
 
+def testing():
+    today = date.today()
+    conn = db.connect()
+    stmt = cycle.insert().values(netid='cmdv', start=today, semester='1222')
+    conn.execute(stmt)
+    conn.close()
+
 # ---------------------------------------------------------------------
 if __name__ == '__main__':
     print('database.py')
+    testing()
+
+

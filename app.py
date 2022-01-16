@@ -10,6 +10,7 @@ from CASClient import CASClient
 from emails import *
 from student import Student
 from database import *
+from cycle import Cycle
 # from scraper import scrape
 # from breakdown import Breakdown
 from alert import Alert
@@ -321,6 +322,7 @@ def admin():
                            curr_admin=getAdmin(),
                            curr_faculty=getFaculty(),
                            breakdown=getAdminBreakdown(),
+                           cycle=getCycleInfo(),
                            alert=['None', 'None', 'None', 'None'],
                            )
     response = make_response(html)
@@ -351,19 +353,57 @@ def start_new_semester():
     elif sem == "summer":
         term += 2
     
-    reset_classes(term)
+    reset_classes(netid, term)
     
+    return redirect('admin')
+
+@app.route('/edit_admin', methods=['GET', 'POST'])
+# @login_required
+def edit_admin():
+    netid = NETID
+    if not LOCAL:
+        netid = cas.authenticate()
+        pageType = "special"
+        role = uservalidation(netid)
+        check = checkuser(role, pageType)
+        if not check:
+            return loginfail(netid)
+
+    admin_user = request.args.get('netid')
+    print('admin user ' + str(admin_user))
+    action_type = request.args.get('action')
+    print('action_type' + str(action_type))
+
+    alert = []
+    # alert = ['None', 'None', 'None', 'None']
+    if action_type == 'add_admin':
+        alert.append(addAdmin(admin_user))
+    else:
+        alert.append('None')
+    if action_type == 'remove_admin':
+        alert.append(deleteAdmin(admin_user))
+    else:
+        alert.append('None')
+    if action_type == 'add_faculty':
+        alert.append(addFaculty(admin_user))
+    else:
+        alert.append('None')
+    if action_type == 'remove_faculty':
+        alert.append(deleteFaculty(admin_user))
+    else:
+        alert.append('None')
+
     html = render_template('admin.html',
                            netid=netid,
                            isAdmin=isAdmin(netid),
                            curr_admin=getAdmin(),
                            curr_faculty=getFaculty(),
                            breakdown=getAdminBreakdown(),
-                           alert=['None', 'None', 'None', 'None'],
+                           cycle=getCycleInfo(),
+                           alert=alert,
                            )
     response = make_response(html)
     return response
-    
 
 
 
@@ -528,7 +568,7 @@ def about():
 # -----------------------------------------------------------------------
 @app.route('/mygroups')
 # @login_required
-def myGroups():
+def myGroups(alert='None'):
     netid = NETID
 
     if not LOCAL:
@@ -561,7 +601,8 @@ def myGroups():
                            netid=netid,
                            isAdmin=isAdmin(netid),
                            myGroups=myGroups,
-                           std_info=getStudentInformation(netid)
+                           std_info=getStudentInformation(netid),
+                           contact_alert='None',
                            )
 
     response = make_response(html)
@@ -604,9 +645,10 @@ def getMyGroupInfo():
             </div>'
     # html += '<h1>' + str(dept) + ' ' + str(coursenum) + '</h1>'
 
-    html += '<div class="row">'
+    html += '<div class="row" style="text-align:center">'
     if students == [netid]:
-        html += '<p>' + 'Nobody has joined yet. Hopefully you\'ll be matched soon!' + '</p>'
+        html += '<p>' + '<br><br>You\'re the first member of your group. Don\'t worry, you\'ll be matched soon, and we will\
+        let you know ASAP!' + '</p>'
     else:
         html += '<table class="table">' + \
                 '<thead class="thead-light">' + \
@@ -710,9 +752,10 @@ def changeGroup():
     response = make_response(html)
     return response
 
-@app.route('/edit_contact', methods=['GET'])
+@app.route('/editContact', methods=['POST'])
 #@login_required
 def edit_contact():
+    print('here')
     netid = NETID
     if not LOCAL:
         netid = cas.authenticate()
@@ -722,21 +765,41 @@ def edit_contact():
         if not check:
             return loginfail(netid)
     
-    fname = request.args.get('fname')
-    lname = request.args.get('lname')
-    phone = request.args.get('phone')
+    fname = request.form.get('fname-input')
+    lname = request.form.get('lname-input')
+    phone = request.form.get('phone-input')
 
-    print('here')
-    print(netid)
-    print(fname)
-    print(lname)
-    print(phone)
+    contact_alert = updateStudent(Student([netid, fname, lname, phone, None, None]))
 
-    updateStudent(Student([netid, fname, lname, phone, None, None]))
+    myGroups = []
 
-    html = ''
+    if not TESTING:
+        groups = getPublicJoinedGroups(netid)
+    else:
+        groups = getJoinedGroups(netid)
+
+    for groupId in groups:
+        group = {}
+        info = getGroupInformation(groupId)
+        students = getStudentsInGroup(groupId)
+        group['groupId'] = groupId
+        group['dept'] = info.getClassDept()
+        group['coursenum'] = info.getClassNum()
+        group['title'] = group['dept'] + ' ' + group['coursenum']
+        group['students'] = students
+        myGroups.append(group)
+
+    html = render_template('mygroups.html',
+                           netid=netid,
+                           isAdmin=isAdmin(netid),
+                           myGroups=myGroups,
+                           std_info=getStudentInformation(netid),
+                           contact_alert=contact_alert,
+                           )
+
     response = make_response(html)
     return response
+
 
 
 # ------------------------------------------------------------------------------

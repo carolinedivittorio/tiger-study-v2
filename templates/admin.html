@@ -25,13 +25,13 @@
           <div class="admin-boxes">
             <h5>Semester Information</h5>
             <hr>
-            The semester in progress is {{semester}}. It was launched by {{launcher}} on {{launch_date}}.
+            The semester in progress is {{cycle.getSemester()}}. It was launched by {{cycle.getNetid()}} on {{cycle.getStart()}}.
             <hr>
             <p style = 'border:3px; border-style:solid; border-color:#FF0000; border-radius: 1vw;padding: 1em;'>
               Starting a new semester will delete all current information from the database. There is no way to undo this. 
               Please use with tremendous caution. 
             </p>
-            <form action="start_new_sem" style="margin:2px; padding:2px">
+            <form action="start_new_semester" style="margin:2px; padding:2px">
               <select id="sem">
                 <option value="fall">
                   <p>Fall</p>
