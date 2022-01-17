@@ -172,7 +172,7 @@ def _switchStudentInClass(netid, class_dept, class_num):
         return groupid
 
     students_in_group = getStudentsInGroup(groupid)
-    if (len(students_in_group <= 1)):
+    if (len(students_in_group) <= 1):
         if not TESTING:
             mail.send(newGroupWelcomeEmail(netid, groupid))
     else:
@@ -545,9 +545,51 @@ def admin_override():
     override_type = request.form.get('override_type')
     dept = request.form.get('dept')
     classnum = request.form.get('classnum')
-    groupid = request.form.get('groupid')
     if override_type == "remove":
+        groupid = request.form.get('groupid')
         removeStudentFromGroup(netid, groupid, dept, classnum)
+
+    elif override_type == "move":
+        groupid = getGroupOfStudentInClass(netid, dept, classnum)
+        new_groupid = request.form.get('new_groupid')
+        removeStudentFromGroup(netid, groupid, dept, classnum)
+        addStudentToGroup(netid, new_groupid)
+
+        endorsement_status = getClassEndorsement(dept, classnum)
+    
+        if endorsement_status == 1:
+            if not TESTING:
+                mail.send(waitingApprovalEmail(dept, classnum, netid))
+
+        students_in_group = getStudentsInGroup(new_groupid)
+        if (len(students_in_group) <= 1):
+            if not TESTING:
+                mail.send(newGroupWelcomeEmail(netid, new_groupid))
+        else:
+            if not TESTING:
+                mail.send(newStudentWelcomeEmail(netid, students_in_group, new_groupid))
+
+    elif override_type == "add":
+        groupid = getGroupOfStudentInClass(netid, dept, classnum)
+        new_groupid = request.form.get('new_groupid')
+        removeStudentFromGroup(netid, groupid, dept, classnum)
+        addStudentToGroup(netid, new_groupid)
+
+        endorsement_status = getClassEndorsement(dept, classnum)
+    
+        if endorsement_status == 1:
+            if not TESTING:
+                mail.send(waitingApprovalEmail(dept, classnum, netid))
+
+        students_in_group = getStudentsInGroup(new_groupid)
+        if (len(students_in_group) <= 1):
+            if not TESTING:
+                mail.send(newGroupWelcomeEmail(netid, new_groupid))
+        else:
+            if not TESTING:
+                mail.send(newStudentWelcomeEmail(netid, students_in_group, new_groupid))
+
+
     
     course = getCourse(dept, classnum)
     group_overview = getGroupsInClass(dept, classnum)

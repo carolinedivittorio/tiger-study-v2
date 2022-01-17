@@ -517,7 +517,9 @@ def switchGroup(netid, dept, num):
     # create new group if necessary
     new_groupid = createNewGroup(dept, num)
     addStudentToGroup(netid, new_groupid)
-    return Alert(["success", new_groupid])  
+    return Alert(["success", new_groupid]) 
+    
+     
 
 # -----------------------------------------------------------------------
 def approveCourse(dept, num, approval, msg):
