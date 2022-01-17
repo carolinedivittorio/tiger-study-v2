@@ -232,20 +232,20 @@ def searchResults():
         html += '<div class="row" style="width: 100%">\
                     <div class="col-4">\
                         <div style = "border:2px; border-style:solid; border-color:grey; border-radius: 1vw;padding: 1em; margin: 1em">\
-                            <center><h3>Step 1</h3><br>Start by searching above for the classes you are taking. Find your classes!</center>\
+                            <center><h3>Step 1</h3><br>Start by searching above for the classes you are taking. Find your classes!<br> </center>\
                         </div>\
                     </div>\
                     <div class="col-4">\
                         <div style = "border:2px; border-style:solid; border-color:grey; border-radius: 1vw;padding: 1em; margin: 1em">\
                             <center><h3>Step 2</h3><br>Click on the "Join" button to join a group. You\'ll be instantly placed into a group\
-                                and we will send you an email with your partnering details. \
+                                and we will send you an email with your partnering details.\
                             </center>\
                         </div>\
                     </div>\
                     <div class="col-4">\
                         <div style = "border:2px; border-style:solid; border-color:grey; border-radius: 1vw;padding: 1em; margin: 1em">\
                             <center><h3>Step 3</h3><br>Find a time that suits your group, and start studying together. Be sure to follow\
-                                course policies on collaboration!\
+                                course policies on collaboration!<br> \
                             </center>\
                         </div>\
                     </div>\
@@ -288,6 +288,8 @@ def searchResults():
         
         if ([course.getDept(), course.getNum()] in alreadyJoined):
             html+= '<td> <a href="mygroups" style="color:black">Group #' +  str(getGroupOfStudentInClass(netid, course.getDept(), course.getNum())) + '</a> </td>\n</tr>\n'
+        elif course.isEndorsed() == 0:
+            html += '<td>N/A</td>'
         else :
             html += '<td> ' + '<button type="button" class="btn btn-link" id="joinGroup" style="padding: 0px; color:black; float:center"' \
                 + 'dept="' + str(course.getDept()) + '" num="' + str(course.getNum()) \
@@ -518,6 +520,52 @@ def edit_course():
     groups = []
     for g in group_overview:
         groups.append([g, getStudentsInGroup(g.getGroupId())])
+
+    html = render_template('admin_edit_course.html',
+                            netid=netid,
+                            isAdmin=isAdmin(netid),
+                            course=course,
+                            groups=groups,
+                            )
+    response = make_response(html)
+    return response
+
+@app.route('/admin_override', methods=['POST'])
+# @login_required
+def admin_override():
+    netid = NETID
+    if not LOCAL:
+        netid = cas.authenticate()
+        pageType = "special"
+        role = uservalidation(netid)
+        check = checkuser(role, pageType)
+        if not check:
+            return loginfail(netid)
+
+    override_type = request.form.get('override_type')
+    dept = request.form.get('dept')
+    classnum = request.form.get('classnum')
+    groupid = request.form.get('groupid')
+    if override_type == "remove":
+        removeStudentFromGroup(netid, groupid, dept, classnum)
+    
+    course = getCourse(dept, classnum)
+    group_overview = getGroupsInClass(dept, classnum)
+    groups = []
+    for g in group_overview:
+        groups.append([g, getStudentsInGroup(g.getGroupId())])
+
+    html = render_template('admin_edit_course.html',
+                            netid=netid,
+                            isAdmin=isAdmin(netid),
+                            course=course,
+                            groups=groups,
+                            )
+    response = make_response(html)
+    return response
+
+    
+    
 
     html = render_template('admin_edit_course.html',
                             netid=netid,

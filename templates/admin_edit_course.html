@@ -79,11 +79,33 @@
                             <!-- <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6> -->
                             <p class="card-text">
                               {% for student in group[1] %}
-                                {{ student }}<br>
+                                <div class="row">
+                                  <div class="col-2">
+                                    {{student}}
+                                  </div>
+                                  <div class="col-1">
+                                    <!-- <form action="admin_override" method="get">
+                                      <input type="hidden" name="dept" value={{course.getDept()}}>
+                                      <input type="hidden" name="classnum" value={{course.getNum()}}>
+                                      <input type="submit" style="color:black; padding:0;" class="btn btn-link" value="Group #{{course[3]}}">
+                                    </form> -->
+                                    <a href="#">Move</a>
+                                  </div>
+                                  <div class="col-9">
+                                    <form action="admin_override" method="post">
+                                      <input type="hidden" name="netid" value={{netid}}>
+                                      <input type="hidden" name="groupid" value={{group[0].getGroupId()}}>
+                                      <input type="hidden" name="dept" value={{course.getDept()}}>
+                                      <input type="hidden" name="classnum" value={{course.getNum()}}>
+                                      <input type="hidden" name="override_type" value="remove">
+                                      <input type="submit" style="padding:0;" class="btn btn-link" value="Remove">
+                                    </form>
+                                  </div>
+                                </div>
                               {% endfor %}
                             </p>
-                            <a href="#" class="card-link">Card link</a>
-                            <a href="#" class="card-link">Another link</a>
+                            <!-- <a href="#" class="card-link">Card link</a>
+                            <a href="#" class="card-link">Another link</a> -->
                           </div>
                         </div>
                       </div>
