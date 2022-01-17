@@ -224,6 +224,35 @@ def searchResults():
     dept = request.args.get('dept')
     coursenum = request.args.get('coursenum')
 
+    if (len(dept) + len(coursenum) < 1):
+        html = '<div class="row" style="background-color:bisque; margin:0; padding:0; height:100%">\
+                    <div class="row" style="width:100%;">\
+                        <div class="container p-5"><center><h1>We\'re so glad you\'re here!</h1></center></div>\
+                    </div>'
+        html += '<div class="row" style="width: 100%">\
+                    <div class="col-4">\
+                        <div style = "border:2px; border-style:solid; border-color:grey; border-radius: 1vw;padding: 1em; margin: 1em">\
+                            <center><h3>Step 1</h3><br>Start by searching above for the classes you are taking. Find your classes!</center>\
+                        </div>\
+                    </div>\
+                    <div class="col-4">\
+                        <div style = "border:2px; border-style:solid; border-color:grey; border-radius: 1vw;padding: 1em; margin: 1em">\
+                            <center><h3>Step 2</h3><br>Click on the "Join" button to join a group. You\'ll be instantly placed into a group\
+                                and we will send you an email with your partnering details. \
+                            </center>\
+                        </div>\
+                    </div>\
+                    <div class="col-4">\
+                        <div style = "border:2px; border-style:solid; border-color:grey; border-radius: 1vw;padding: 1em; margin: 1em">\
+                            <center><h3>Step 3</h3><br>Find a time that suits your group, and start studying together. Be sure to follow\
+                                course policies on collaboration!\
+                            </center>\
+                        </div>\
+                    </div>\
+                </div><div class="row" style="height: 20vh"><br><br><br></div>\
+                </div>'
+        return make_response(html)
+
     courses = search(dept, coursenum)
 
     html = '<table class=\"table table-striped justify-content-between\"> ' \
