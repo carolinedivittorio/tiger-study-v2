@@ -426,6 +426,20 @@ def search(class_dept, class_num):
             returned_classes.append(Course(row))
     return returned_classes
 
+def searchStudents(netid):
+    conn = db.connect()
+    stmt = student.select() \
+        .where(student.c.netid.like("%" + str(netid) + "%"))\
+        
+    result = conn.execute(stmt.order_by(student.c.netid))
+
+    returned_students = []
+    if result is not None:
+        for row in result:
+            returned_students.append(Student(row))
+    return returned_students
+
+
 # -------------------------------------------------------------
 # have student with netid join the class with dept, num
 def addStudentToClass(netid, dept, num):

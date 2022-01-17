@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+
+<!-- =============================================================== -->
+<!-- admin_view_student.html                                         -->
+<!-- Author: Caroline di Vittorio                                    -->
+<!-- =============================================================== -->
+
+<html>
+  <head>
+    {% include 'header.html' %}
+  </head>
+  <body>
+    {% include 'nav.html' %}
+
+    <div class="panel">
+      <div class="admin-breakdown-general">
+          <div class="row p-5 position:fixed">
+              <div class="col-12">
+                  <div class="row">
+                      <div class="col-12">
+                          <center><h2>Student Information for <strong>{{student.getNetid()}}</strong></h2>
+                          </center>
+                          <hr><br>
+                      </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-2"><strong>
+                        Netid: <br>      
+                        First name:  <br>               
+                        Last name: <br>  
+                        Phone: <br></strong>
+                      </div>
+                      <div class="col-10">
+                        {{student.getNetid()}}<br>
+                        {{student.getFirstName()}}<br>
+                        {{student.getLastName()}}<br>
+                        {{student.getPhone()}}<br>
+                      </div>
+                  </div>
+                  <br>
+                  <div class="row-fluid">
+                    <div class="courses-groups">
+                        <table class="table table-striped">
+                            <thead>
+                              <tr>
+                                <th align="left">Dept</th>
+                                <th align="left">Num</th>
+                                <th align="left">Title</th>
+                                <th align="left">Group</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                                {% for course in courses %}
+                                    <tr>
+                                        <td>{{course[0]}}</td>
+                                        <td>{{course[1]}}</td>
+                                        <td>{{course[2]}} </td>
+                                        <td>
+                                            <form action="edit_course" method="get">
+                                                <input type="hidden" name="dept" value={{course[0]}}>
+                                                <input type="hidden" name="classnum" value={{course[1]}}>
+                                                <input type="submit" style="color:black" class="btn btn-link" value="Group #{{course[3]}}">
+                                            </form>
+                                        </td>
+                                    </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+              </div>    
+          </div>
+      </div>
+    </div>
+
+  {% include 'footer.html' %}
+  </body>
+
+  </div>
+
+</html>

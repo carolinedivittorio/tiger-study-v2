@@ -540,27 +540,93 @@ def submit_course_edits():
     return response
 
 
-# ------------------------------------------------------------------------------
-# ABOUT
-# ------------------------------------------------------------------------------
-@app.route('/about')
+@app.route('/admin_students')
 # @login_required
-def about():
+def admin_students():
     netid = NETID
     if not LOCAL:
         netid = cas.authenticate()
-        pageType = "undergraduates"
+        pageType = "special"
         role = uservalidation(netid)
         check = checkuser(role, pageType)
         if not check:
             return loginfail()
+        useraccount = userAccount(netid, role)
+        login_user(useraccount)
 
-    html = render_template('about.html',
+    html = render_template('admin_students.html',
                            netid=netid,
                            isAdmin=isAdmin(netid),
                            )
     response = make_response(html)
     return response
+
+@app.route('/searchAdminStudents', methods=['GET'])
+# @login_required
+def searchAdminStudentsResults():
+    netid = request.args.get('netid')
+
+    students = searchStudents(netid)
+
+    html = '<table class=\"table table-striped\"> ' \
+           '<thead> ' \
+           '<tr> ' \
+           '<th align = \"left\">Netid</th> ' \
+            '<th align = \"left\">Name</th> ' \
+           '<th align = \"right\">  </th> ' + \
+           '</tr>' + \
+           '</thead>' \
+           '<tbody> '
+    for student in students:
+
+        html_form = '<form action="view_student" method="get">\
+            <input type="hidden" name="netid" value=' + student.getNetid() + '>\
+            <input type="submit" class="btn" value="View Student Profile">\
+        </form>'
+
+        html += '<tr>\n' + \
+                '<td> ' + student.getNetid() + ' </td>\n' + \
+                '<td> ' + student.getFirstName() + " " + student.getLastName() + ' </td>\n'
+        html += '<td> ' + html_form + '</td>\n'
+
+    html += '</tbody></table>'
+    response = make_response(html)
+    return response
+
+@app.route('/view_student', methods=['GET'])
+# @login_required
+def view_student():
+    netid = NETID
+    if not LOCAL:
+        netid = cas.authenticate()
+        pageType = "special"
+        role = uservalidation(netid)
+        check = checkuser(role, pageType)
+        if not check:
+            return loginfail(netid)
+
+    netid = request.args.get('netid')
+    student = getStudentInformation(netid)
+    courses = getJoinedClasses(netid)
+    courses_long = []
+    for course in courses:
+        title = getCourseTitle(course[0], course[1])
+        groupid = getGroupOfStudentInClass(netid, course[0], course[1])
+        courses_long.append([course[0], course[1], title, groupid])
+    # group_overview = getGroupsInClass(dept, classnum)
+    # groups = []
+    # for g in group_overview:
+    #     groups.append([g, getStudentsInGroup(g.getGroupId())])
+
+    html = render_template('admin_view_student.html',
+                            netid=netid,
+                            isAdmin=isAdmin(netid),
+                            student=student,
+                            courses=courses_long,
+                            )
+    response = make_response(html)
+    return response
+
 
 # ------------------------------------------------------------------------------
 # MYGROUPS
