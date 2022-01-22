@@ -64,8 +64,7 @@ def scrape(department, term):
     """
     PTON_NAMESPACE = u'http://as.oit.princeton.edu/xml/courseofferings-1_5'
     parser = etree.XMLParser(ns_clean=True)
-    link_start = FEED_PREFIX + "?term=" + str(term) + "&subject="
-    link = link_start + department + VERSION_PREFIX
+    link = DEP_PREFIX + department + VERSION_PREFIX
     xmldoc = urlopen(link)
     tree = etree.parse(xmldoc, parser)
     dep_courses = tree.getroot()
@@ -82,7 +81,6 @@ def scrape(department, term):
                             x["dept"] = dept
                             parsed_courses.append(x)
     return parsed_courses
-
 
 def parse_course(course, subject):
     """ create a course with basic information.

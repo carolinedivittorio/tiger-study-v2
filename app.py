@@ -580,24 +580,23 @@ def admin_override():
                 mail.send(newStudentWelcomeEmail(override_netid, students_in_group, new_groupid))
 
     elif override_type == "add":
-        groupid = getGroupOfStudentInClass(netid, dept, classnum)
         new_groupid = request.form.get('new_groupid')
-        removeStudentFromGroup(netid, groupid, dept, classnum)
-        addStudentToGroup(netid, new_groupid)
+        removeStudentFromGroup(override_netid, new_groupid, dept, classnum)
+        addStudentToGroup(override_netid, new_groupid)
 
         endorsement_status = getClassEndorsement(dept, classnum)
     
         if endorsement_status == 1:
             if not TESTING:
-                mail.send(waitingApprovalEmail(dept, classnum, netid))
+                mail.send(waitingApprovalEmail(dept, classnum, override_netid))
 
         students_in_group = getStudentsInGroup(new_groupid)
         if (len(students_in_group) <= 1):
             if not TESTING:
-                mail.send(newGroupWelcomeEmail(netid, new_groupid))
+                mail.send(newGroupWelcomeEmail(override_netid, new_groupid))
         else:
             if not TESTING:
-                mail.send(newStudentWelcomeEmail(netid, students_in_group, new_groupid))
+                mail.send(newStudentWelcomeEmail(override_netid, students_in_group, new_groupid))
 
 
     
@@ -616,17 +615,7 @@ def admin_override():
     response = make_response(html)
     return response
 
-    
-    
 
-    html = render_template('admin_edit_course.html',
-                            netid=netid,
-                            isAdmin=isAdmin(netid),
-                            course=course,
-                            groups=groups,
-                            )
-    response = make_response(html)
-    return response
 
 
 @app.route("/submit_course_edits")
@@ -863,13 +852,14 @@ def getMyGroupInfo():
             if str(studentNetid) != str(netid):
                 student = getStudentInformation(studentNetid)
                 print('studentInfo', student)
-                html += '<tr>' + \
-                        '<td>' + str(student.getFirstName()) + '</td>' + \
-                        '<td>' + str(student.getLastName()) + '</td>' + \
-                        '<td>' + '<a href="mailto:' + str(studentNetid) + '@princeton.edu" target="_blank">' + str(
-                    studentNetid) + '</a>' + '</td>' + \
-                        '<td>' + str(student.getPhone()) + '</td>' + \
-                        '</tr>'
+                if student is not None:
+                    html += '<tr>' + \
+                            '<td>' + str(student.getFirstName()) + '</td>' + \
+                            '<td>' + str(student.getLastName()) + '</td>' + \
+                            '<td>' + '<a href="mailto:' + str(studentNetid) + '@princeton.edu" target="_blank">' + str(
+                        studentNetid) + '</a>' + '</td>' + \
+                            '<td>' + str(student.getPhone()) + '</td>' + \
+                            '</tr>'
 
         html += '</tbody>' + \
                 '</table></div></div>'

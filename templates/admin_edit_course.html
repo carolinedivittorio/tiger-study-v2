@@ -79,6 +79,7 @@
                               <div class="col-2">
                                 <h5>Group #{{group[0].getGroupId()}}</h5>
                               </div>
+                              <!-- Add Button -->
                               <div class="col-10">
                                 <button class="btn btn-link" style="padding:0.5; margin:0.5;" data-toggle="modal" data-target="#addModal">Add</button>
                               </div>
@@ -91,7 +92,7 @@
                                   </div>
                                   <!-- Move Button -->
                                   <div class="col-1">
-                                    <button class="moveButton btn btn-link" id="submitMove" style="padding:0.5; margin:0.5;" data-netid={{student}} data={{student}} data-toggle="modal" data-target="#moveModal">Move</button>
+                                    <button class="moveButton btn btn-link" id="submitMove" style="padding:0.5; margin:0.5;" data-toggle="modal" data-target="#moveModal" data-netid={{student}} data={{student}}>Move</button>
                                   </div>
                                   <!-- Remove Button -->
                                   <div class="col-9">
@@ -125,7 +126,8 @@
                     </div>      
                     <!-- Modal body -->
                     <div class="modal-body text-center">
-                      <form action="admin_override" id="admin_override_move" method = "post">
+                      Select a new group for this student.
+                      <form action="admin_override" id="admin_override_move" method="post">
                         <input type="hidden" name="override_netid" value="" id="override_netid">
                         <input type="hidden" name="dept" value={{course.getDept()}}>
                         <input type="hidden" name="classnum" value={{course.getNum()}}>
@@ -144,7 +146,6 @@
                 </div>
               </div>
 
-
               <!-- Add MODAL -->
               <div class="modal" id="addModal">
                 <div class="modal-dialog">
@@ -158,11 +159,10 @@
                     <div class="modal-body text-center">
                       Enter information for the new student.<br><br>
                       <form action="admin_override" id="admin_override_move" method="post">
-                        <input type="hidden" name="netid" value={{netid}}>
                         <input type="hidden" name="dept" value={{course.getDept()}}>
                         <input type="hidden" name="classnum" value={{course.getNum()}}>
                         <input type="hidden" name="override_type" value="add">
-                        <input type="text" name="added_netid" placeholder="Netid">
+                        <input type="text" name="override_netid" placeholder="Netid">
                         <select style="padding:2" id="new_groupid" name="new_groupid">
                           {% for group in groups %}
                             <option value={{group[0].getGroupId()}}>
@@ -170,13 +170,15 @@
                             </option>
                           {% endfor %}
                         </select>
-                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
                         <input type="submit" style="padding:0.5; margin:2" class="btn btn-primary" value="Add">
                       </form>
                     </div>
                   </div>
                 </div>
               </div>
+
+
+              
 
 
           </div>
@@ -186,11 +188,12 @@
     <script type="text/javascript">
        function setup()
         {
-          $("#submitMove").click(function () {
-            var override_netid = $(this).attr('data-netid');
-            // $("#override_netid_input").value(override_netid);
-            $("input[id='override_netid']").val(override_netid);
-          });   
+
+          $(document).on("click", ".moveButton", function() {
+						//get data-netid attribute of the clicked element
+						let netid = $(this).attr('data-netid');
+						$("input[id='override_netid']").val(netid);
+					});
         }
       
       $('document').ready(setup);  

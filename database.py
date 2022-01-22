@@ -475,13 +475,17 @@ def addStudentToGroup(netid, groupid):
 # -----------------------------------------------------------------------
 # removes the student with netid from the relevant group (and therefore class)
 def removeStudentFromGroup(netid, groupid, dept, num):
+    if netid is None:
+        return
+    if groupid is None:
+        return
     if isStudentInClass(netid, dept, num):
         conn = db.connect()
-        stmt = group_assignment.delete(group_assignment).where(group_assignment.c.groupid == groupid).where(
+        stmt = group_assignment.delete().where(group_assignment.c.groupid == groupid).where(
             group_assignment.c.netid == netid)
         conn.execute(stmt)
         if getNumStudentsInGroup(groupid) <= 0:
-            stmt = group_info.delete(group_info).where(group_info.c.groupid == groupid)
+            stmt = group_info.delete().where(group_info.c.groupid == groupid)
             conn.execute(stmt)
         conn.close()
 
