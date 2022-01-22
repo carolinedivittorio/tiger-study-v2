@@ -289,7 +289,7 @@ def searchResults():
         if ([course.getDept(), course.getNum()] in alreadyJoined):
             html+= '<td> <a href="mygroups" style="color:black">Group #' +  str(getGroupOfStudentInClass(netid, course.getDept(), course.getNum())) + '</a> </td>\n</tr>\n'
         elif course.isEndorsed() == 0:
-            html += '<td>N/A</td>'
+            html += '<td>Not Approved</td>'
         else :
             html += '<td> ' + '<button type="button" class="btn btn-link" id="joinGroup" style="padding: 0px; color:black; float:center"' \
                 + 'dept="' + str(course.getDept()) + '" num="' + str(course.getNum()) \
@@ -359,7 +359,7 @@ def admin():
     response = make_response(html)
     return response
 
-@app.route('/start_new_semester')
+@app.route('/start_new_semester', methods=['POST'])
 #@login_required
 def start_new_semester():
     netid = NETID
@@ -371,8 +371,11 @@ def start_new_semester():
         if not check:
             return loginfail(netid)
     
-    sem = request.args.get('sem')
-    year = request.args.get('year')
+    sem = request.form.get('sem')
+    year = request.form.get('year')
+
+    print(sem)
+    print(year)
 
     # calculate term number - starting point:
     # 1222 = Fall 2021, 
@@ -543,31 +546,38 @@ def admin_override():
             return loginfail(netid)
 
     override_type = request.form.get('override_type')
+    override_netid = request.form.get('override_netid')
     dept = request.form.get('dept')
     classnum = request.form.get('classnum')
+
+    print('Data that is passed yay!')
+    print(override_netid)
+    print(dept)
+    print(classnum)
+
     if override_type == "remove":
         groupid = request.form.get('groupid')
-        removeStudentFromGroup(netid, groupid, dept, classnum)
+        removeStudentFromGroup(override_netid, groupid, dept, classnum)
 
     elif override_type == "move":
-        groupid = getGroupOfStudentInClass(netid, dept, classnum)
+        groupid = getGroupOfStudentInClass(override_netid, dept, classnum)
         new_groupid = request.form.get('new_groupid')
-        removeStudentFromGroup(netid, groupid, dept, classnum)
-        addStudentToGroup(netid, new_groupid)
+        removeStudentFromGroup(override_netid, groupid, dept, classnum)
+        addStudentToGroup(override_netid, new_groupid)
 
         endorsement_status = getClassEndorsement(dept, classnum)
     
         if endorsement_status == 1:
             if not TESTING:
-                mail.send(waitingApprovalEmail(dept, classnum, netid))
+                mail.send(waitingApprovalEmail(dept, classnum, override_netid))
 
         students_in_group = getStudentsInGroup(new_groupid)
         if (len(students_in_group) <= 1):
             if not TESTING:
-                mail.send(newGroupWelcomeEmail(netid, new_groupid))
+                mail.send(newGroupWelcomeEmail(override_netid, new_groupid))
         else:
             if not TESTING:
-                mail.send(newStudentWelcomeEmail(netid, students_in_group, new_groupid))
+                mail.send(newStudentWelcomeEmail(override_netid, students_in_group, new_groupid))
 
     elif override_type == "add":
         groupid = getGroupOfStudentInClass(netid, dept, classnum)

@@ -518,8 +518,8 @@ def switchGroup(netid, dept, num):
     new_groupid = createNewGroup(dept, num)
     addStudentToGroup(netid, new_groupid)
     return Alert(["success", new_groupid]) 
-    
-     
+
+
 
 # -----------------------------------------------------------------------
 def approveCourse(dept, num, approval, msg):
@@ -604,7 +604,8 @@ def reset_classes(netid, term):
     conn.execute(stmt)    
 
     #start a new cycle
-    stmt = cycle.insert(netid=netid, date=date.today(), semester=term)
+    stmt = cycle.insert().values(netid=netid, start=date.today(), term=str(term))
+    conn.execute(stmt)
     conn.close()
     #set the classes
     DEPTS = ["AAS", "AFS", "AMS", "ANT", "AOS", "APC", "ARA", "ARC", "ART", "ASA", "AST", "ATL", "BCS", 
@@ -618,6 +619,7 @@ def reset_classes(netid, term):
     num_courses = 0
     for dept in DEPTS:
         scrape_results = scrape(dept, term)
+        print('scraped ' + str(dept))
         for course in scrape_results:
             num_courses = num_courses + 1
             coursenum = course.get("coursenum")
@@ -629,9 +631,8 @@ def reset_classes(netid, term):
 
 
 def testing():
-    today = date.today()
     conn = db.connect()
-    stmt = cycle.insert().values(netid='cmdv', start=today, semester='1222')
+    stmt = cycle.insert().values(netid='cmdv', start=date.today(), term='1223')
     conn.execute(stmt)
     conn.close()
 

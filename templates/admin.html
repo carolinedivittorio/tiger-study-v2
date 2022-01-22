@@ -31,8 +31,8 @@
               Starting a new semester will delete all current information from the database. There is no way to undo this. 
               Please use with tremendous caution. 
             </p>
-            <form action="start_new_semester" style="margin:2px; padding:2px">
-              <select id="sem">
+            <form action="start_new_semester" method='post' style="margin:2px; padding:2px">
+              <select name="sem" id="sem">
                 <option value="fall">
                   <p>Fall</p>
                 </option><option value="spring">
@@ -41,7 +41,7 @@
                   <p>Summer</p>
                 </option>
               </select>
-              <select id="year">
+              <select name="year" id="year">
                 <option value="2021">
                   <p>2021</p>
                 </option><option value="2022">
@@ -50,7 +50,7 @@
                   <p>2023</p>
                 </option>
               </select>
-              <input type="submit" class=btn value="Start">
+              <input type="submit" class="btn" value="Start">
             </form> 
           </div>
         </div>

@@ -83,24 +83,20 @@
                                 <button class="btn btn-link" style="padding:0.5; margin:0.5;" data-toggle="modal" data-target="#addModal">Add</button>
                               </div>
                             </div>
-                            <!-- <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6> -->
                             <p class="card-text">
                               {% for student in group[1] %}
                                 <div class="row">
                                   <div class="col-2">
                                     {{student}}
                                   </div>
+                                  <!-- Move Button -->
                                   <div class="col-1">
-                                    <!-- <form action="admin_override" method="get">
-                                      <input type="hidden" name="dept" value={{course.getDept()}}>
-                                      <input type="hidden" name="classnum" value={{course.getNum()}}>
-                                      <input type="submit" style="color:black; padding:0;" class="btn btn-link" value="Group #{{course[3]}}">
-                                    </form> -->
-                                    <button class="btn btn-link" style="padding:0.5; margin:0.5;" data-toggle="modal" data-target="#moveModal">Move</button>
+                                    <button class="moveButton btn btn-link" id="submitMove" style="padding:0.5; margin:0.5;" data-netid={{student}} data={{student}} data-toggle="modal" data-target="#moveModal">Move</button>
                                   </div>
+                                  <!-- Remove Button -->
                                   <div class="col-9">
                                     <form action="admin_override" method="post">
-                                      <input type="hidden" name="netid" value={{netid}}>
+                                      <input type="hidden" name="override_netid" value={{student}}>
                                       <input type="hidden" name="groupid" value={{group[0].getGroupId()}}>
                                       <input type="hidden" name="dept" value={{course.getDept()}}>
                                       <input type="hidden" name="classnum" value={{course.getNum()}}>
@@ -110,9 +106,7 @@
                                   </div>
                                 </div>
                               {% endfor %}
-                            </p>
-                            <!-- <a href="#" class="card-link">Card link</a>
-                            <a href="#" class="card-link">Another link</a> -->
+                            </p> 
                           </div>
                         </div>
                       </div>
@@ -126,14 +120,13 @@
                   <div class="modal-content">
                     <!-- Modal Header -->
                     <div class="modal-header">
-                      <h4 class="modal-title">Move {{netid}} to a different group</h4>
+                      <h4 class="modal-title">Move Student to a New Group</h4>
                       <button type="button" class="close" data-dismiss="modal">&times;</button>
                     </div>      
                     <!-- Modal body -->
                     <div class="modal-body text-center">
-                      Select a new group for {{netid}}.<br><br>
                       <form action="admin_override" id="admin_override_move" method = "post">
-                        <input type="hidden" name="netid" value={{netid}}>
+                        <input type="hidden" name="override_netid" value="" id="override_netid">
                         <input type="hidden" name="dept" value={{course.getDept()}}>
                         <input type="hidden" name="classnum" value={{course.getNum()}}>
                         <input type="hidden" name="override_type" value="move">
@@ -152,7 +145,7 @@
               </div>
 
 
-              <!-- MOVE MODAL -->
+              <!-- Add MODAL -->
               <div class="modal" id="addModal">
                 <div class="modal-dialog">
                   <div class="modal-content">
@@ -189,6 +182,19 @@
           </div>
       </div>
     </div>
+
+    <script type="text/javascript">
+       function setup()
+        {
+          $("#submitMove").click(function () {
+            var override_netid = $(this).attr('data-netid');
+            // $("#override_netid_input").value(override_netid);
+            $("input[id='override_netid']").val(override_netid);
+          });   
+        }
+      
+      $('document').ready(setup);  
+    </script>
 
   {% include 'footer.html' %}
   </body>
