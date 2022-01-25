@@ -141,7 +141,9 @@ def _addStudentToClass(netid, class_dept, class_num):
 
     if endorsement_status == 1:
         if not TESTING:
-            mail.send(waitingApprovalEmail(class_dept, class_num, netid))
+            emails = waitingApprovalEmail(class_dept, class_num, netid)
+            mail.send(emails[0])
+            mail.send(emails[1])
         return groupid
 
     students_in_group = getStudentsInGroup(groupid)
