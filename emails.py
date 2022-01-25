@@ -71,7 +71,7 @@ def courseApprovedEmail(groups, dept, num):
 def newStudentWelcomeEmail(netid, students, groupid):
     print('SENDING EMAIL IN NEW STUDENT WELCOME EMAIL')
     print(students)
-    student_info = students[0]
+    student_info = getStudentInformation(students[0])
     if student_info.getFirstName() == "":
         student_name = student_info.getNetid()
     else:
@@ -80,7 +80,8 @@ def newStudentWelcomeEmail(netid, students, groupid):
     group_information = getGroupInformation(groupid)
     email = [netid + "@princeton.edu"]
     contact_summary = ""
-    for s in students:
+    for std in students:
+        s = getStudentInformation(std)
         email.append(s.getNetid() + "@princeton.edu")
         if s.getFirstName() != "":
             contact_summary += str(s.getFirstName()) + " " + str(s.getLastName()) + ": "
