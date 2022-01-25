@@ -30,6 +30,32 @@
     <br>
     <br>
 
+    <!-- Join MODAL -->
+    <div class="modal" id="joinModal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+              <h4 class="modal-title">Join <span id="join-dept-header"></span> <span id="join-num-header"></span></h4>
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>      
+            <!-- Modal body -->
+            <div class="modal-body">
+            <div style="margin: 1em;">By using joining a group on TigerStudy for this class, you are <strong>agreeing to respect all of Princeton's collaboration policies</strong>,
+              including general Honor Code rules and also course-specific guidelines.</div>
+            
+              <span id="instructor-notes"> </span>
+            
+              <form action="joinClass" id="join-class" method="get">
+                <input type="hidden" id="join-dept" name="dept" value="">
+                <input type="hidden" id="join-num" name="classnum" value="">
+                <input type="submit" style="padding:0.5; margin:2" class="btn btn-primary" value="I accept">
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
     {% include 'footer.html' %}
 
 
@@ -41,6 +67,25 @@
             $('#dept-input').on('input', getResults);
             $('#num-input').on('input', getResults);
             getResults();
+
+            $(document).on("click", ".joinButton", function() {
+						//get data-netid attribute of the clicked element
+						let dept = $(this).attr('data-dept');
+            let num = $(this).attr('data-num');
+            let inst_notes = $(this).attr('data-notes');
+            if (inst_notes != "") {
+              inst_notes = '<p style = "border:3px; border-style:solid; border-color:#FF0000; border-radius: 1vw; padding: 1em; margin:1em">' + 
+              "Your instructor wants to remind you of course policies. Please review the following note: <br> <strong>" + inst_notes + "</strong></p>"
+            }
+						$("input[id='join-dept']").val(dept);
+            $("input[id='join-num']").val(num);
+            $("span[id='instructor-notes']").html(inst_notes);
+            $("span[id='join-dept-header']").html(dept);
+            $("span[id='join-num-header']").html(num);
+
+					});
+
+
         }
 
         function handleResponse(response)

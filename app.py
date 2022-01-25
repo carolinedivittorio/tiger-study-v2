@@ -291,9 +291,9 @@ def searchResults():
         elif course.isEndorsed() == 0:
             html += '<td>Not Approved</td>'
         else :
-            html += '<td> ' + '<button type="button" class="btn btn-link" id="joinGroup" style="padding: 0px; color:black; float:center"' \
-                + 'dept="' + str(course.getDept()) + '" num="' + str(course.getNum()) \
-                + '" onclick="joinClass(this)"> <h6>Join</h6> </button>' + ' </td>\n</tr>\n'
+            html += '<td> ' + '<button type="button" class="joinButton btn btn-link" id="joinButton" style="padding: 0px; color:black; float:center"' \
+                + 'data-toggle="modal" data-target="#joinModal" data-dept="' + str(course.getDept()) + '" data-num="' + str(course.getNum()) + '" data-notes="' + str(course.getNotes())\
+                + '"<h6>Join</h6> </button>' + ' </td>\n</tr>\n'
 
     html += '</tbody></table>'
     response = make_response(html)
@@ -312,7 +312,11 @@ def joinStudentToClass():
             return loginfail()
 
     dept = request.args.get('dept')
-    num = request.args.get('num')
+    num = request.args.get('classnum')
+
+    print('info passed along')
+    print(dept)
+    print(num)
 
     # if isStudentInClass(netid, dept, coursenum):
     #     html = '<br><div class="alert alert-danger" role="alert">' + \
