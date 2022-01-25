@@ -145,7 +145,7 @@ def _addStudentToClass(netid, class_dept, class_num):
         return groupid
 
     students_in_group = getStudentsInGroup(groupid)
-    if (len(students_in_group <= 1)):
+    if (len(students_in_group) <= 1):
         if not TESTING:
             mail.send(newGroupWelcomeEmail(netid, groupid))
     else:
