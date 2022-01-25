@@ -24,12 +24,12 @@ from userAccount import userAccount
 
 # -----------------------------------------------------------------------
 
-LOCAL = True
-# LOCAL = False
+# LOCAL = True
+LOCAL = False
 NETID = '[netid]'
 if LOCAL:
     NETID = 'cmdv'
-TESTING = True
+TESTING = False
 
 # -----------------------------------------------------------------------
 
@@ -219,7 +219,7 @@ def home():
     return response
 
 @app.route('/search', methods=['GET'])
-# @login_required
+@login_required
 def searchResults():
     dept = request.args.get('dept')
     coursenum = request.args.get('coursenum')
@@ -300,7 +300,7 @@ def searchResults():
     return response
 
 @app.route('/joinClass', methods=['GET'])
-# @login_required
+@login_required
 def joinStudentToClass():
     netid = NETID
     if not LOCAL:
@@ -340,7 +340,7 @@ def joinStudentToClass():
 # -----------------------------------------------------------------------
 # About: include some info about the site
 @app.route('/admin')
-# @login_required
+@login_required
 def admin():
     netid = NETID
     if not LOCAL:
@@ -364,7 +364,7 @@ def admin():
     return response
 
 @app.route('/start_new_semester', methods=['POST'])
-#@login_required
+@login_required
 def start_new_semester():
     netid = NETID
     if not LOCAL:
@@ -396,7 +396,7 @@ def start_new_semester():
     return redirect('admin')
 
 @app.route('/edit_admin', methods=['GET', 'POST'])
-# @login_required
+@login_required
 def edit_admin():
     netid = NETID
     if not LOCAL:
@@ -449,7 +449,7 @@ def edit_admin():
 # EDIT COURSE INFORMATION AND MANUAL GROUP INTERVENTION
 # ------------------------------------------------------------------------------
 @app.route('/admin_courses')
-# @login_required
+@login_required
 def admin_courses():
     print('in admin courses')
     netid = NETID
@@ -471,7 +471,7 @@ def admin_courses():
     return response
 
 @app.route('/searchAdmin', methods=['GET'])
-# @login_required
+@login_required
 def searchAdminResults():
     dept = request.args.get('dept')
     coursenum = request.args.get('coursenum')
@@ -507,7 +507,7 @@ def searchAdminResults():
     return response
 
 @app.route('/edit_course', methods=['GET'])
-# @login_required
+@login_required
 def edit_course():
     netid = NETID
     if not LOCAL:
@@ -538,7 +538,7 @@ def edit_course():
     return response
 
 @app.route('/admin_override', methods=['POST'])
-# @login_required
+@login_required
 def admin_override():
     netid = NETID
     if not LOCAL:
@@ -623,7 +623,7 @@ def admin_override():
 
 
 @app.route("/submit_course_edits")
-# @login_required
+@login_required
 def submit_course_edits():
     netid = NETID
     if not LOCAL:
@@ -663,7 +663,7 @@ def submit_course_edits():
 
 
 @app.route('/admin_students')
-# @login_required
+@login_required
 def admin_students():
     netid = NETID
     if not LOCAL:
@@ -684,7 +684,7 @@ def admin_students():
     return response
 
 @app.route('/searchAdminStudents', methods=['GET'])
-# @login_required
+@login_required
 def searchAdminStudentsResults():
     netid = request.args.get('netid')
 
@@ -716,7 +716,7 @@ def searchAdminStudentsResults():
     return response
 
 @app.route('/view_student', methods=['GET'])
-# @login_required
+@login_required
 def view_student():
     netid = NETID
     if not LOCAL:
@@ -755,7 +755,7 @@ def view_student():
 # ------------------------------------------------------------------------------
 # -----------------------------------------------------------------------
 @app.route('/mygroups')
-# @login_required
+@login_required
 def myGroups(alert='None'):
     netid = NETID
 
@@ -800,7 +800,7 @@ def myGroups(alert='None'):
 # -----------------------------------------------------------------------
 # Get My Group Info: display the info for a selected group that I joined
 @app.route('/getMyGroupInfo', methods=['GET'])
-# @login_required
+@login_required
 def getMyGroupInfo():
     netid = NETID
     if not LOCAL:
@@ -887,7 +887,7 @@ def getMyGroupInfo():
 # -----------------------------------------------------------------------
 # Leave Group: leave a group
 @app.route('/leaveGroup', methods=['GET'])
-# @login_required
+@login_required
 def leaveGroup():
     netid = NETID
     if not LOCAL:
@@ -916,7 +916,7 @@ def leaveGroup():
 # -----------------------------------------------------------------------
 # Change Group: get a different group
 @app.route('/changeGroup', methods=['GET'])
-# @login_required
+@login_required
 def changeGroup():
     netid = NETID
     if not LOCAL:
@@ -942,7 +942,7 @@ def changeGroup():
     return response
 
 @app.route('/editContact', methods=['POST'])
-#@login_required
+@login_required
 def edit_contact():
     print('here')
     netid = NETID
@@ -1005,13 +1005,6 @@ def logout():
 # ------------------------------------------------------------------------------
 # TESTING
 # ------------------------------------------------------------------------------
-@app.route('/testing')
-def testing():
-    html = render_template('loginfail.html',
-    )
-    response = make_response(html)
-    return response
-
 
 
 
