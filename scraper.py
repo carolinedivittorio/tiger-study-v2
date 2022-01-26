@@ -13,6 +13,7 @@ from html.parser import HTMLParser
 from urllib.request import urlopen
 import re
 import ssl
+import pprint
 
 ssl.SSLContext.verify_mode = ssl.VerifyMode.CERT_OPTIONAL
 ssl._create_default_https_context = ssl._create_unverified_context
@@ -28,6 +29,7 @@ VERSION_PREFIX = "&vers=1.5"
 CURRENT_SEMESTER = ['']
 
 h = HTMLParser()
+pp = pprint.PrettyPrinter(indent=4)
 
 
 class ParseError(Exception):
@@ -46,7 +48,7 @@ def get_text(key, object, fail_ok=False):
     elif (found is None or found.text is None):
         ParseError("key " + key + " does not exist")
     else:
-        return h.unescape(found.text)
+        return found.text
 
 
 def remove_namespace(doc, namespace):
@@ -95,4 +97,5 @@ def parse_course(course, subject):
 
 
 if __name__ == '__main__':
-    print('scraper.py')
+    res = scrape("COS", TERM_CODE)
+    pp.pprint(res)
