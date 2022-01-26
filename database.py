@@ -608,7 +608,7 @@ def reset_classes(netid):
     conn.execute(stmt)    
 
     #start a new cycle
-    stmt = cycle.insert().values(netid=netid, start=date.today(), term=str(term))
+    stmt = cycle.insert().values(netid=netid, start=date.today(), term=str('1223'))
     conn.execute(stmt)
     conn.close()
     #set the classes
