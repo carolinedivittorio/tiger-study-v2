@@ -597,7 +597,7 @@ def instantiateClass(dept, num, title):
 def reset_classes(netid):
     conn = db.connect()
     stmt = classes.delete()
-    # conn.execute(stmt)
+    conn.execute(stmt)
     # stmt = group_assignment.delete()
     # conn.execute(stmt)
     # stmt = group_info.delete()
