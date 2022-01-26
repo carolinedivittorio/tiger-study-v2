@@ -634,15 +634,10 @@ def reset_classes(netid):
 
 
 
-def testing():
-    conn = db.connect()
-    stmt = cycle.insert().values(netid='cmdv', start=date.today(), term='1223')
-    conn.execute(stmt)
-    conn.close()
 
 # ---------------------------------------------------------------------
 if __name__ == '__main__':
     print('database.py')
-    testing()
+
 
 
