@@ -12,7 +12,7 @@ def newGroupWelcomeEmail(netid, groupid):
     student_info = getStudentInformation(netid)
     first_name = netid if student_info.getFirstName() == "" else student_info.getFirstName()
 
-    group_information = (groupid)
+    group_information = getGroupInformation(groupid)
     msg = Message(
         "Welcome to TigerStudy for " + str(group_information.getClassDept()) + str(group_information.getClassNum()),
         sender="tiger-study@princeton.edu",
