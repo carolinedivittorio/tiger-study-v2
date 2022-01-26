@@ -377,23 +377,23 @@ def start_new_semester():
         if not check:
             return loginfail(netid)
     
-    sem = request.form.get('sem')
-    year = request.form.get('year')
+    # sem = request.form.get('sem')
+    # year = request.form.get('year')
 
-    print(sem)
-    print(year)
+    # print(sem)
+    # print(year)
 
     # calculate term number - starting point:
     # 1222 = Fall 2021, 
-    term = 1222 + 3 * (int(year) - 2022)
-    if sem =="fall":
-        term += 3
-    elif sem == "spring":
-        term += 1
-    elif sem == "summer":
-        term += 2
+    # term = 1222 + 3 * (int(year) - 2022)
+    # if sem =="fall":
+    #     term += 3
+    # elif sem == "spring":
+    #     term += 1
+    # elif sem == "summer":
+    #     term += 2
     
-    reset_classes(netid, term)
+    reset_classes(netid)
     
     return redirect('admin')
 

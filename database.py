@@ -594,16 +594,16 @@ def instantiateClass(dept, num, title):
 # Resets the database for new use. Deletes all information within it and reloads
 # all current class information.
 # USE WITH TREMENDOUS CAUTION
-def reset_classes(netid, term):
+def reset_classes(netid):
     conn = db.connect()
     stmt = classes.delete()
-    conn.execute(stmt)
-    stmt = group_assignment.delete()
-    conn.execute(stmt)
-    stmt = group_info.delete()
-    conn.execute(stmt)
-    stmt = student.delete()
-    conn.execute(stmt)
+    # conn.execute(stmt)
+    # stmt = group_assignment.delete()
+    # conn.execute(stmt)
+    # stmt = group_info.delete()
+    # conn.execute(stmt)
+    # stmt = student.delete()
+    # conn.execute(stmt)
     stmt = cycle.delete()
     conn.execute(stmt)    
 
@@ -622,7 +622,7 @@ def reset_classes(netid, term):
         "TUR", "TWI", "URB", "URD", "VIS", "WRI"]
     num_courses = 0
     for dept in DEPTS:
-        scrape_results = scrape(dept, term)
+        scrape_results = scrape(dept)
         print('scraped ' + str(dept))
         for course in scrape_results:
             num_courses = num_courses + 1

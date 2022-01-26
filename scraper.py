@@ -18,8 +18,8 @@ import pprint
 ssl.SSLContext.verify_mode = ssl.VerifyMode.CERT_OPTIONAL
 ssl._create_default_https_context = ssl._create_unverified_context
 
-# TERM_CODE = 'current'
-TERM_CODE='1222' #Fall21
+TERM_CODE = 'current'
+# TERM_CODE='1222' #Fall21
 COURSE_OFFERINGS = "http://registrar.princeton.edu/course-offerings/"
 FEED_PREFIX = "http://etcweb.princeton.edu/webfeeds/courseofferings/"
 TERM_PREFIX = FEED_PREFIX + "?term=" + str(TERM_CODE)
@@ -61,7 +61,7 @@ def remove_namespace(doc, namespace):
             elem.tag = elem.tag[nsl:]
 
 
-def scrape(department, term):
+def scrape(department):
     """ Scrape all events listed under department
     """
     PTON_NAMESPACE = u'http://as.oit.princeton.edu/xml/courseofferings-1_5'
