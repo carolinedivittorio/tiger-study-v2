@@ -118,7 +118,7 @@ def load_user(user_id):
         role = uservalidation(user_id)
         return userAccount(user_id, role)
     except Exception as e:
-        loginfail()
+        return loginfail()
 
 
 # -----------------------------------------------------------------------
@@ -194,18 +194,18 @@ def home():
     isFirstLogin = True
     if not LOCAL:
         netid = cas.authenticate()
+        # determine whether this is the user's first login
+        isFirstLogin = firstLogin(netid)
         pageType = "undergraduates"
         role = uservalidation(netid)
         check = checkuser(role, pageType)
 
-        # determine whether this is the user's first login
         if not check:
             return loginfail()
         else:
             useraccount = userAccount(netid, role)
             login_user(useraccount)
 
-        isFirstLogin = firstLogin(netid)
         if isFirstLogin:
             createNewStudent(netid)
             if not TESTING:
