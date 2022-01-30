@@ -84,13 +84,15 @@ def uservalidation(netid):
     special = isAdmin(netid)
     if special:
         return "special"
-    undergrad = pustatus.isUndergraduate(ldapserver, netid)
-    if undergrad:
+    else: 
         return "undergraduates"
+    # undergrad = pustatus.isUndergraduate(ldapserver, netid)
+    # if undergrad:
+    #     return "undergraduates"
 
-    if isFaculty(netid):
-        return "undergraduates"
-    return "other"
+    # if isFaculty(netid):
+    #     return "undergraduates"
+    # return "other"
 
 
 # checks that the user's role matches the page type
